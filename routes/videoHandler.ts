@@ -50,24 +50,31 @@ exports.getVideo = () => {
 exports.promotionVideo = () => {
   return (req: Request, res: Response) => {
     fs.readFile('views/promotionVideo.pug', function (err, buf) {
-      if (err != null) throw err
-      let template = buf.toString()
-      const subs = getSubsFromFile()
+      if (err != null) {
+        res.status(500).send('Internal Server Error')
+        return
+      }
+      try {
+        let template = buf.toString()
+        const subs = getSubsFromFile()
 
-      challengeUtils.solveIf(challenges.videoXssChallenge, () => { return utils.contains(subs, '</script><script>alert(`xss`)</script>') })
+        challengeUtils.solveIf(challenges.videoXssChallenge, () => { return utils.contains(subs, '</script><script>alert(`xss`)</script>') })
 
-      const theme = themes[config.get<string>('application.theme')]
-      template = template.replace(/_title_/g, entities.encode(config.get<string>('application.name')))
-      template = template.replace(/_favicon_/g, favicon())
-      template = template.replace(/_bgColor_/g, theme.bgColor)
-      template = template.replace(/_textColor_/g, theme.textColor)
-      template = template.replace(/_navColor_/g, theme.navColor)
-      template = template.replace(/_primLight_/g, theme.primLight)
-      template = template.replace(/_primDark_/g, theme.primDark)
-      const fn = pug.compile(template)
-      let compiledTemplate = fn()
-      compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + subs + '</script>')
-      res.send(compiledTemplate)
+        const theme = themes[config.get<string>('application.theme')]
+        template = template.replace(/_title_/g, entities.encode(config.get<string>('application.name')))
+        template = template.replace(/_favicon_/g, favicon())
+        template = template.replace(/_bgColor_/g, theme.bgColor)
+        template = template.replace(/_textColor_/g, theme.textColor)
+        template = template.replace(/_navColor_/g, theme.navColor)
+        template = template.replace(/_primLight_/g, theme.primLight)
+        template = template.replace(/_primDark_/g, theme.primDark)
+        const fn = pug.compile(template)
+        let compiledTemplate = fn()
+        compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + subs + '</script>')
+        res.send(compiledTemplate)
+      } catch (e) {
+        res.status(500).send('Internal Server Error')
+      }
     })
   }
   function favicon () {
