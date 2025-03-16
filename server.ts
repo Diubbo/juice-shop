@@ -28,6 +28,7 @@ import colors from 'colors/safe'
 import * as utils from './lib/utils'
 import * as Prometheus from 'prom-client'
 import datacreator from './data/datacreator'
+import rateLimit from 'express-rate-limit'
 
 import validatePreconditions from './lib/startup/validatePreconditions'
 import cleanupFtpFolder from './lib/startup/cleanupFtpFolder'
@@ -627,7 +628,11 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.get('/redirect', redirect())
 
   /* Routes for promotion video page */
-  app.get('/promotion', videoHandler.promotionVideo())
+  const promotionVideoLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  })
+  app.get('/promotion', promotionVideoLimiter, videoHandler.promotionVideo())
   app.get('/video', videoHandler.getVideo())
 
   /* Routes for profile page */
