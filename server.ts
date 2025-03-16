@@ -39,7 +39,6 @@ import customizeApplication from './lib/startup/customizeApplication'
 import customizeEasterEgg from './lib/startup/customizeEasterEgg' // vuln-code-snippet hide-line
 
 import authenticatedUsers from './routes/authenticatedUsers'
-import rateLimit from 'express-rate-limit'
 
 const startTime = Date.now()
 const finale = require('finale-rest')
