@@ -631,7 +631,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   const promotionVideoLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100 // limit each IP to 100 requests per windowMs
-  });
+  })
   app.get('/promotion', promotionVideoLimiter, videoHandler.promotionVideo())
   app.get('/video', videoHandler.getVideo())
 
