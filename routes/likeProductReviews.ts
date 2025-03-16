@@ -14,6 +14,10 @@ const security = require('../lib/insecurity')
 module.exports = function productReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id
+    if (typeof id !== "string") {
+      res.status(400).json({ error: 'Invalid ID' })
+      return
+    }
     const user = security.authenticatedUsers.from(req)
     db.reviewsCollection.findOne({ _id: { $eq: id } }).then((review: Review) => {
       if (!review) {
@@ -28,7 +32,7 @@ module.exports = function productReviews () {
             () => {
               // Artificial wait for timing attack challenge
               setTimeout(function () {
-                db.reviewsCollection.findOne({ _id: id }).then((review: Review) => {
+                db.reviewsCollection.findOne({ _id: { $eq: id } }).then((review: Review) => {
                   const likedBy = review.likedBy
                   likedBy.push(user.data.email)
                   let count = 0
