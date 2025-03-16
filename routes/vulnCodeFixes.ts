@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response } from 'express'
-import * as path from 'path';
+import * as path from 'path'
 import * as accuracy from '../lib/accuracy'
 
 const challengeUtils = require('../lib/challengeUtils')
@@ -77,11 +77,11 @@ export const checkCorrectFix = () => async (req: Request<Record<string, unknown>
     })
   } else {
     let explanation
-    const rootDir = path.resolve('./data/static/codefixes');
-    const infoFilePath = path.resolve(rootDir, key + '.info.yml');
+    const rootDir = path.resolve('./data/static/codefixes')
+    const infoFilePath = path.resolve(rootDir, key + '.info.yml')
     if (!infoFilePath.startsWith(rootDir)) {
-      res.status(403).json({ error: 'Access denied' });
-      return;
+      res.status(403).json({ error: 'Access denied' })
+      return
     }
     if (fs.existsSync(infoFilePath)) {
       const codingChallengeInfos = yaml.load(fs.readFileSync(infoFilePath, 'utf8'))
