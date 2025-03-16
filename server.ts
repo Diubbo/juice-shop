@@ -41,6 +41,11 @@ import authenticatedUsers from './routes/authenticatedUsers'
 
 const startTime = Date.now()
 const finale = require('finale-rest')
+import rateLimit from 'express-rate-limit'
+const rateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
 const express = require('express')
 const compression = require('compression')
 const helmet = require('helmet')
@@ -639,7 +644,7 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.get('/snippets/:challenge', vulnCodeSnippet.serveCodeSnippet())
   app.post('/snippets/verdict', vulnCodeSnippet.checkVulnLines())
   app.get('/snippets/fixes/:key', vulnCodeFixes.serveCodeFixes())
-  app.post('/snippets/fixes', vulnCodeFixes.checkCorrectFix())
+  app.post('/snippets/fixes', rateLimiter, vulnCodeFixes.checkCorrectFix())
 
   app.use(angular())
 
