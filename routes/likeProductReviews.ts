@@ -14,7 +14,7 @@ const security = require('../lib/insecurity')
 module.exports = function productReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id
-    if (typeof id !== "string") {
+    if (typeof id !== 'string') {
       res.status(400).json({ error: 'Invalid ID' })
       return
     }
